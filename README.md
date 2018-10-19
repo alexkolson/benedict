@@ -34,3 +34,6 @@ message containing the RSVP'd headcount Friday at 7AM.
         - Click on the "yes" button to tell the bot you are coming
         - Click on the "no" button to tell the bot you are not coming
         - If you do not click at all by Friday at 2AM it is an assumed "no" RSVP.
+
+## Technical Info
+Right now Benedict is built to run on [hook.io](https://hook.io), but if it grows into something more I want to put it in a simple docker compose constellation and throw it up an a small docker host somewhere.
