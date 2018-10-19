@@ -11,7 +11,7 @@ I built this bot to automate the processes of volunteering & gathering RSVPs.
 If nobody has volunteerd to bring breakfast by Thursday of the current week at 3PM, the bot posts a question the the configured
 team and channel asking if anyone would like to volunteer for breakfast. Ideally, someone volunteers and the process continues.
 If no one volunteers by Friday at 2AM, it is assumed that no one will be volunteering and the bot does nothing further. In the case
-where someone volunteers before Friday at 2AM by using the `/volunteer` slash command or by responding to the bot's question, the bot
+where someone volunteers before Friday at 2AM by using the `volunteer` command or by responding to the bot's question, the bot
 then sends a message to the configured channel and team asking who will be attending breakfast. All members of the team can then respond
 with "yes" and, optionallly, if they will be bringing any guests. RSVP's close Friday at 2AM. The bot then sends the volunteer a personal
 message containing the RSVP'd headcount Friday at 7AM.
