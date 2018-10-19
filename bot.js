@@ -5,7 +5,7 @@ const getBearerToken = function (authUrl, appId, appPassword) {
     form: {
       grant_type: 'client_credentials',
       client_id: appId,
-      client_secfret: appPassword,
+      client_secret: appPassword,
       scope: 'https://api.botframework.com/.default',
     }
   });
