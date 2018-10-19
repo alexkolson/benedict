@@ -1,6 +1,6 @@
 const request = require('request-promise');
 
-const getBearerToken = (authUrl, appId, appPassword) => {
+const getBearerToken = function (authUrl, appId, appPassword) {
   return request.post(authUrl, {
     form: {
       grant_type: 'client_credentials',
@@ -11,7 +11,7 @@ const getBearerToken = (authUrl, appId, appPassword) => {
   });
 };
 
-module.exports = (hook) => {
+module.exports = function (hook) {
   const {
     env: {
       MICROSOFT_APP_ID,
