@@ -70,7 +70,7 @@ module.exports = function (hook) {
       res.end();
     })
     .catch(function (err) {
-      console.log({ err: err.message });
+      console.log({ err });
       res.statusCode = 500;
       res.end();
     })
