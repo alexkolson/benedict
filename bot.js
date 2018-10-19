@@ -29,10 +29,12 @@ module.exports = function (hook) {
   console.log({ msTeamsPayload });
 
   getBearerToken(MICROSOFT_BOT_AUTH_URL, MICROSOFT_APP_ID, MICROSOFT_APP_PASSWORD)
-    .then((authResponse) => console.log({ authResponse }));
+    .then(function (authResponse) {
+      console.log({ authResponse });
+      res.statusCode = 500;
+      res.end();
+    });
 
-  res.status(200);
-  res.end();
   // Command volunteer
   // Command rsvp
   // Command rsvps
