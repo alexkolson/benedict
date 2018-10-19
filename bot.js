@@ -22,7 +22,7 @@ const replyToUserBotMention = function (accessToken, serviceUrl, conversation, m
   return request.post(url, {
     json: true,
     headers: {
-      authorization: 'bearer ' + accessToken,
+      authorization: 'Bearer ' + accessToken,
     },
     body: {
       type: 'message',
