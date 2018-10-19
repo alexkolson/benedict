@@ -14,6 +14,20 @@ const getBearerToken = function (authUrl, appId, appPassword) {
   });
 };
 
+const replyToUserBotMention = function (serviceUrl, conversation, messageId, from, recipient) {
+  return request.post([serviceUrl, 'api/v3', 'conversations', conversation.id, 'activities', messageId].join('/'), {
+    json: true,
+    body: {
+      type: 'message',
+      from,
+      conversation,
+      recipient,
+      text: 'Hello there @' + recipient.name + '! \uD83D\uDC4B I am currently still under construction. @Alex Olson is working on me I promise! I will soon be a good breakfast bot! The very best I can be! \uD83D\uDCAA',
+      replyToId: messageId,
+    }
+  });
+};
+
 module.exports = function (hook) {
   const {
     env: {
@@ -33,8 +47,19 @@ module.exports = function (hook) {
 
   getBearerToken(MICROSOFT_BOT_AUTH_URL, MICROSOFT_APP_ID, MICROSOFT_APP_PASSWORD)
     .then(function (accessToken) {
-      console.log({ accessToken });
-      res.statusCode = 200;
+      // Reply to user and tell them we are stil being built...
+      const {
+        serviceUrl,
+        id: messageId,
+        conversation,
+        recipient: from,
+        from: recipient,
+      } = msTeamsPayload;
+
+      return replyToUserBotMention(serviceUrl, conversation, messageId, from, recipient);
+    })
+    .then(function () {
+      res.status = 200;
       res.end();
     })
     .catch(function (err) {
