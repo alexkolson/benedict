@@ -16,12 +16,12 @@ then sends a message to the configured channel and team asking who will be atten
 with "yes" and, optionallly, if they will be bringing any guests. RSVP's close Friday at 2AM. The bot then sends the volunteer a personal
 message containing the RSVP'd headcount Friday at 7AM.
 
-### Slash Commands
+### Commands
 - Volunteer commands:
-    - `/volunteer` - Tell the bot you wish to volunteer to bring breakfast on the next coming Friday
-    - `/rsvps` - Retrieve the current RSVP count for breakfast
+    - `volunteer` - Tell the bot you wish to volunteer to bring breakfast on the next coming Friday
+    - `rsvps` - Retrieve the current RSVP count for breakfast
 - Attendee commands:
-    - `/rsvp`- Tell the bot you are coming to breakfast on the next coming Friday. If nobody has as of yet volunteered to bring breakfast, the bot will tell you as much and this command will do nothing.
+    - `rsvp`- Tell the bot you are coming to breakfast on the next coming Friday. If nobody has as of yet volunteered to bring breakfast, the bot will tell you as much and this command will do nothing.
 ## Messages
 - "Nobody has signed up to bring breakfast, would you like to?"
     - Sent to the configured team & channel on Thursday of the current week at 3PM when nobody has volunteered by using `/volunteer`.
