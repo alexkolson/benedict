@@ -14,9 +14,12 @@ const getBearerToken = function (authUrl, appId, appPassword) {
   });
 };
 
-const replyToUserBotMention = function (serviceUrl, conversation, messageId, from, recipient) {
-  return request.post([serviceUrl, 'api/v3', 'conversations', conversation.id, 'activities', messageId].join('/'), {
+const replyToUserBotMention = function (accessToken, serviceUrl, conversation, messageId, from, recipient) {
+  return request.post([serviceUrl, 'api/v3/', 'conversations/', conversation.id, 'activities/', messageId].join(''), {
     json: true,
+    headers: {
+      authorization: 'bearer ' + accessToken,
+    },
     body: {
       type: 'message',
       from,
