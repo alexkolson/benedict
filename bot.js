@@ -14,8 +14,8 @@ const getBearerToken = function (authUrl, appId, appPassword) {
   });
 };
 
-const replyToUserBotMention = function (accessToken, serviceUrl, conversation, messageId, from, recipient) {
-  const url = [serviceUrl, 'v3/', 'conversations/', encodeURIComponent(conversation.id), '/', 'activities/', messageId].join('');
+const replyToUserBotMention = function (accessToken, serviceUrl, conversation, messageId, from, recipient, botCreatorId, botCreatorName) {
+  const url = [serviceUrl, 'v3/', 'conversations/', conversation.id, '/', 'activities/', messageId].join('');
 
   console.log({ msg: 'About to post message from replyToUserBotMention', url });
 
@@ -29,8 +29,26 @@ const replyToUserBotMention = function (accessToken, serviceUrl, conversation, m
       from,
       conversation,
       recipient,
-      text: 'Hello there <at>@' + recipient.name + '</at>! \uD83D\uDC4B I am currently still under construction. <at>@Alex Olson</at> is working on me I promise! I will soon be a good breakfast bot! The very best I can be! \uD83D\uDCAA',
+      text: 'Hello there <at>' + recipient.name + '</at>! \uD83D\uDC4B I am currently still under construction. <at>' + botCreatorName + '</at> is working on me I promise! I will soon be a good breakfast bot! The very best I can be! \uD83D\uDCAA',
       replyToId: messageId,
+      entities: [
+        {
+          mentioned: {
+            id: recipient.id,
+            name: recipient.name,
+          },
+          text: '<at>' + recipient.name + '</at>',
+          type: 'mention'
+        },
+        {
+          mentioned: {
+            id: botCreatorId,
+            name: botCreatorName,
+          },
+          text: '<at>' + botCreatorName + '</at>',
+          type: 'mention'
+        },
+      ],
     }
   });
 };
@@ -41,6 +59,8 @@ module.exports = function (hook) {
       MICROSOFT_APP_ID,
       MICROSOFT_APP_PASSWORD,
       MICROSOFT_BOT_AUTH_URL,
+      BOT_CREATOR_ID,
+      BOT_CREATOR_NAME,
     },
     params,
     req: {
@@ -63,7 +83,7 @@ module.exports = function (hook) {
         from: recipient,
       } = msTeamsPayload;
 
-      return replyToUserBotMention(accessToken, serviceUrl, conversation, messageId, from, recipient);
+      return replyToUserBotMention(accessToken, serviceUrl, conversation, messageId, from, recipient, BOT_CREATOR_ID, BOT_CREATOR_NAME);
     })
     .then(function () {
       res.status = 200;
