@@ -11,7 +11,7 @@ const getBearerToken = (authUrl, appId, appPassword) => {
   });
 };
 
-module.exports = async (hook) => {
+module.exports = (hook) => {
   const {
     env: {
       MICROSOFT_APP_ID,
