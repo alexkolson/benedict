@@ -15,10 +15,14 @@ const getBearerToken = function (authUrl, appId, appPassword) {
 };
 
 const replyToUserBotMention = function (accessToken, serviceUrl, conversation, messageId, from, recipient) {
-  return request.post([serviceUrl, 'apis/v3/', 'conversations/', conversation.id, '/', 'activities/', messageId].join(''), {
+  const url = [serviceUrl, 'apis/v3/', 'conversations/', conversation.id, '/', 'activities/', messageId].join('');
+
+  console.log({ msg: 'About to post message from replyToUserBotMention', url });
+
+  return request.post(url, {
     json: true,
     headers: {
-      authorization: 'Bearer ' + accessToken,
+      authorization: 'bearer ' + accessToken,
     },
     body: {
       type: 'message',
