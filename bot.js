@@ -29,7 +29,7 @@ const replyToUserBotMention = function (accessToken, serviceUrl, conversation, m
       from,
       conversation,
       recipient,
-      text: 'Hello there <at>' + recipient.name + '</at>! \uD83D\uDC4B I am currently still under construction. <at>' + botCreatorName + '</at> is working on me I promise! I will soon be a good breakfast bot! The very best I can be! \uD83D\uDCAA',
+      text: 'Hello there <at>' + recipient.name + '</at>! Nice of you to say hello! \uD83D\uDC4B I am currently still under construction. <at>' + botCreatorName + '</at> is working on me I promise! I will soon be a good breakfast bot! The very best I can be! \uD83D\uDCAA',
       replyToId: messageId,
       entities: [
         {
