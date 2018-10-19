@@ -18,7 +18,7 @@ const replyToUserBotMention = function (accessToken, serviceUrl, conversation, m
   return request.post([serviceUrl, 'apis/v3/', 'conversations/', conversation.id, '/', 'activities/', messageId].join(''), {
     json: true,
     headers: {
-      authorization: 'bearer ' + accessToken,
+      authorization: 'Bearer ' + accessToken,
     },
     body: {
       type: 'message',
