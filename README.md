@@ -1,8 +1,8 @@
 # Benedict - The Microsoft Teams Breakfast Bot
 Where I work we eat breakfast together every Friday and the preperation process goes something like this:
-    - Someone volunteers to bring breakfast
-    - A survey is sent out via our collaboration system by the volunteer to determine how many people are going to come to breakfast
-    - The volunteer uses this information to then bring enough breakfast for everyone who signed up
+- Someone volunteers to bring breakfast
+- A survey is sent out via our collaboration system by the volunteer to determine how many people are going to come to breakfast
+- The volunteer uses this information to then bring enough breakfast for everyone who signed up
 
 As one of the main volunteers, I got tired of the repetitive task of making the survey, sending it out to everyone, and then periodically checking the survey responses in order to prepare for bringing breakfast.
 I built this bot to automate the processes of volunteering & gathering RSVPs.
