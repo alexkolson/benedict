@@ -1,4 +1,4 @@
-# Microsoft Teams Breakfast Bot
+# Benedict - The Microsoft Teams Breakfast Bot
 Where I work we eat breakfast together every Friday and the preperation process goes something like this:
     - Someone volunteers to bring breakfast
     - A survey is sent out via our collaboration system by the volunteer to determine how many people are going to come to breakfast
