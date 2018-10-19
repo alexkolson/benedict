@@ -15,7 +15,7 @@ const getBearerToken = function (authUrl, appId, appPassword) {
 };
 
 const replyToUserBotMention = function (accessToken, serviceUrl, conversation, messageId, from, recipient) {
-  return request.post([serviceUrl, 'api/v3/', 'conversations/', conversation.id, 'activities/', messageId].join(''), {
+  return request.post([serviceUrl, 'apis/v3/', 'conversations/', conversation.id, 'activities/', messageId].join(''), {
     json: true,
     headers: {
       authorization: 'bearer ' + accessToken,
