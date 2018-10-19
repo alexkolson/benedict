@@ -20,6 +20,7 @@ const replyToUserBotMention = function (accessToken, serviceUrl, conversation, m
   console.log({ msg: 'About to post message from replyToUserBotMention', url });
 
   return request.post(url, {
+    resolveWithFullResponse: true,
     json: true,
     headers: {
       authorization: 'bearer ' + accessToken,
