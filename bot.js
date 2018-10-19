@@ -1,7 +1,7 @@
 const request = require('request-promise');
 
-const getBearerToken = async (authUrl, appId, appPassword) => {
-  const authResponse = await request.post(authUrl, {
+const getBearerToken = (authUrl, appId, appPassword) => {
+  return request.post(authUrl, {
     form: {
       grant_type: 'client_credentials',
       client_id: appId,
@@ -9,8 +9,6 @@ const getBearerToken = async (authUrl, appId, appPassword) => {
       scope: 'https://api.botframework.com/.default',
     }
   });
-
-  console.log({ authResponse });
 };
 
 module.exports = async (hook) => {
@@ -27,9 +25,11 @@ module.exports = async (hook) => {
     },
     res,
   } = hook;
+
   console.log({ msTeamsPayload });
 
-  await getBearerToken(MICROSOFT_BOT_AUTH_URL, MICROSOFT_APP_ID, MICROSOFT_APP_PASSWORD);
+  getBearerToken(MICROSOFT_BOT_AUTH_URL, MICROSOFT_APP_ID, MICROSOFT_APP_PASSWORD)
+    .then((authResponse) => console.log({ authResponse }));
 
   res.status(200);
   res.end();
