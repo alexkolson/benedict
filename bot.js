@@ -29,7 +29,7 @@ const replyToUserBotMention = function (accessToken, serviceUrl, conversation, m
       from,
       conversation,
       recipient,
-      text: 'Hello there @' + recipient.name + '! U+1F44B I am currently still under construction. @Alex Olson is working on me I promise! I will soon be a good breakfast bot! The very best I can be! U+1F4AA',
+      text: 'Hello there @' + recipient.name + '! \uD83D\uDC4B I am currently still under construction. @Alex Olson is working on me I promise! I will soon be a good breakfast bot! The very best I can be! \uD83D\uDCAA',
       replyToId: messageId,
     }
   });
