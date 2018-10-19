@@ -7,7 +7,8 @@ const getBearerToken = function (authUrl, appId, appPassword) {
       client_id: appId,
       client_secret: appPassword,
       scope: 'https://api.botframework.com/.default',
-    }
+    },
+    json: true,
   }).then(function (authResponse) {
     return authResponse.access_token;
   });
