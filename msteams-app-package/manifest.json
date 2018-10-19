@@ -1,0 +1,62 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.3/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.3",
+    "version": "1.0.0",
+    "id": "e630ea6f-9472-4432-a450-37f7cf990aa0",
+    "packageName": "com.alexkolson.breakfastbot",
+    "developer": {
+        "name": "Alex Kellen Olson",
+        "websiteUrl": "https://github.com/alexkolson/ms-teams-breakfast-bot",
+        "privacyUrl": "https://gist.github.com/alexkolson/d34ffd0ad938d0fa8e5044e9b3095f0e",
+        "termsOfUseUrl": "https://opensource.org/licenses/MIT"
+    },
+    "icons": {
+        "color": "color.png",
+        "outline": "outline.png"
+    },
+    "name": {
+        "short": "Berakfast Bot",
+        "full": "Breakfast Bot"
+    },
+    "description": {
+        "short": "Organizes company breakfast!",
+        "full": "Handles the logistics of setting up company breakfast. Because breakfast is awesome!"
+    },
+    "accentColor": "#800020",
+    "bots": [
+        {
+            "botId": "08a45913-15c7-4531-8c6e-7fab26f195d1",
+            "scopes": [
+                "team"
+            ],
+            "commandLists": [
+                {
+                    "scopes": [
+                        "team"
+                    ],
+                    "commands": [
+                        {
+                            "title": "volunteer",
+                            "description": "Sign up to bring breakfast"
+                        },
+                        {
+                            "title": "rsvps",
+                            "description": "Get current rsvp count for breakfast"
+                        },
+                        {
+                            "title": "rsvp",
+                            "description": "Tell benidict you are coming to breakfast"
+                        }
+                    ]
+                }
+            ],
+            "supportsFiles": false,
+            "isNotificationOnly": false
+        }
+    ],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": []
+}
