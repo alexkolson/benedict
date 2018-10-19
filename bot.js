@@ -59,7 +59,7 @@ module.exports = function (hook) {
         from: recipient,
       } = msTeamsPayload;
 
-      return replyToUserBotMention(serviceUrl, conversation, messageId, from, recipient);
+      return replyToUserBotMention(accessToken, serviceUrl, conversation, messageId, from, recipient);
     })
     .then(function () {
       res.status = 200;
