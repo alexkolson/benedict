@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 
 const parseCommand = function (message) {
   const $ = cheerio.load(message);
-  console.log({ $: $.html(), $a: $('at').html() });
+  console.log({ $: $.html(), $a: $.html('at') });
 };
 
 const getBearerToken = function (authUrl, appId, appPassword) {
