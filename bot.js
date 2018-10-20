@@ -1,9 +1,7 @@
 const request = require('request-promise');
-const cheerio = require('cheerio');
 
 const parseCommand = function (message) {
-  const $ = cheerio.load(message);
-  console.log({ $: $.html(), $a: $.html('at') });
+  return message.replace(/<at>Benedict<\/at>/g, '').trin();
 };
 
 const getBearerToken = function (authUrl, appId, appPassword) {
@@ -90,7 +88,8 @@ module.exports = function (hook) {
         from: recipient,
       } = msTeamsPayload;
 
-      return parseCommand(message);
+      const command = parseCommand(message);
+      console.log({ command });
       // return replyToUserBotMention(accessToken, serviceUrl, conversation, messageId, from, recipient, BOT_CREATOR_ID, BOT_CREATOR_NAME);
     })
     .then(function () {
