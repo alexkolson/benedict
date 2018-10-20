@@ -1,4 +1,10 @@
 const request = require('request-promise');
+const cheerio = require('cheerio');
+
+const parseCommand = function (message) {
+  const $ = cheerio.load(message);
+  console.log({ $: $.html() });
+};
 
 const getBearerToken = function (authUrl, appId, appPassword) {
   return request.post(authUrl, {
@@ -78,12 +84,14 @@ module.exports = function (hook) {
       const {
         serviceUrl,
         id: messageId,
+        text: message,
         conversation,
         recipient: from,
         from: recipient,
       } = msTeamsPayload;
 
-      return replyToUserBotMention(accessToken, serviceUrl, conversation, messageId, from, recipient, BOT_CREATOR_ID, BOT_CREATOR_NAME);
+      return parseCommand(message);
+      // return replyToUserBotMention(accessToken, serviceUrl, conversation, messageId, from, recipient, BOT_CREATOR_ID, BOT_CREATOR_NAME);
     })
     .then(function () {
       res.status = 200;
