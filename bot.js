@@ -97,7 +97,7 @@ module.exports = function (hook) {
       res.end();
     })
     .catch(function (err) {
-      console.log({ err });
+      console.log({ err: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err))) });
       res.statusCode = 500;
       res.end();
     })
