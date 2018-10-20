@@ -1,4 +1,33 @@
+const { format } = require('util');
+
 const request = require('request-promise');
+
+const serializeError = function (err) {
+  return JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)));
+};
+
+const acknowledgeRsvp = function (hook) {
+};
+
+const retrieveRsvpCount = function (hook) {
+
+};
+
+const acknowledgeVolunteer = function (hook) {
+
+};
+
+const acknowledgeUnknownCommand = function (hook) {
+
+}
+
+const commandToActionMap = {
+  rsvp: acknowledgeRsvp,
+  rsvps: retrieveRsvpCount,
+  volunteer: acknowledgeVolunteer,
+};
+
+const commands = Object.keys(commandToActionMap);
 
 const parseCommand = function (message) {
   return message.replace(/<at>Benedict<\/at>/g, '').trim();
@@ -18,7 +47,16 @@ const getBearerToken = function (authUrl, appId, appPassword) {
   });
 };
 
-const replyToUserBotMention = function (accessToken, serviceUrl, conversation, messageId, from, recipient, botCreatorId, botCreatorName) {
+const replyToUserBotMention = function (hook) {
+  const {
+    serviceUrl,
+    id: messageId,
+    text: message,
+    conversation,
+    recipient: from,
+    from: recipient,
+  } = hook.req.body;
+
   const url = [serviceUrl, 'v3/', 'conversations/', conversation.id, '/', 'activities/', messageId].join('');
 
   console.log({ msg: 'About to post message from replyToUserBotMention', url });
@@ -33,7 +71,7 @@ const replyToUserBotMention = function (accessToken, serviceUrl, conversation, m
       from,
       conversation,
       recipient,
-      text: 'Hello there <at>' + recipient.name + '</at>! Nice of you to say hello! \uD83D\uDC4B I am currently still under construction. <at>' + botCreatorName + '</at> is working on me I promise! I will soon be a good breakfast bot! The very best I can be! \uD83D\uDCAA',
+      text: 'Hello there <at>' + recipient.name + '</at>! Nice of you to say hello! \uD83D\uDC4B',
       replyToId: messageId,
       entities: [
         {
@@ -57,50 +95,31 @@ const replyToUserBotMention = function (accessToken, serviceUrl, conversation, m
   });
 };
 
-module.exports = function (hook) {
-  const {
-    env: {
-      MICROSOFT_APP_ID,
-      MICROSOFT_APP_PASSWORD,
-      MICROSOFT_BOT_AUTH_URL,
-      BOT_CREATOR_ID,
-      BOT_CREATOR_NAME,
-    },
-    params,
-    req: {
-      method: reqMethod,
-      body: msTeamsPayload,
-    },
-    res,
-  } = hook;
+module.exports = function bot(hook) {
+  console.log({ payload: hook.req.body });
 
-  console.log({ msTeamsPayload });
+  const command = parseCommand(message);
 
-  getBearerToken(MICROSOFT_BOT_AUTH_URL, MICROSOFT_APP_ID, MICROSOFT_APP_PASSWORD)
-    .then(function (accessToken) {
-      // Reply to user and tell them we are stil being built...
-      const {
-        serviceUrl,
-        id: messageId,
-        text: message,
-        conversation,
-        recipient: from,
-        from: recipient,
-      } = msTeamsPayload;
+  if (commands.indexOf(command) === -1) {
+    const unkownCommadnErr = new Error(format('command: %s not a known benedict command.', command));
+    unkownCommadnErr.status = 404;
+    throw unkownCommadnErr;
+  }
 
-      const command = parseCommand(message);
-      console.log({ command });
-      // return replyToUserBotMention(accessToken, serviceUrl, conversation, messageId, from, recipient, BOT_CREATOR_ID, BOT_CREATOR_NAME);
-    })
+  console.log({ command });
+
+  const { [command]: action } = commandToActionMap;
+
+  return action(hook)
     .then(function () {
       res.status = 200;
       res.end();
     })
     .catch(function (err) {
-      console.log({ err: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err))) });
-      res.statusCode = 500;
+      console.log({ err: serializeError(err) });
+      res.statusCode = err.status || 500;
       res.end();
-    })
+    });
 
   // Command volunteer
   // Command rsvp
