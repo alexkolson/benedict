@@ -1,7 +1,7 @@
 const request = require('request-promise');
 
 const parseCommand = function (message) {
-  return message.replace(/<at>Benedict<\/at>/g, '').trin();
+  return message.replace(/<at>Benedict<\/at>/g, '').trim();
 };
 
 const getBearerToken = function (authUrl, appId, appPassword) {
