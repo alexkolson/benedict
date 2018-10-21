@@ -24,7 +24,7 @@ message containing the RSVP'd headcount Friday at 7AM.
     - `rsvp`- Tell the bot you are coming to breakfast on the next coming Friday. If nobody has as of yet volunteered to bring breakfast, the bot will tell you as much and this command will do nothing.
 ## Messages
 - "Nobody has signed up to bring breakfast, would you like to?"
-    - Sent to the configured team & channel on Thursday of the current week at 3PM when nobody has volunteered by using `/volunteer`.
+    - Sent to the configured team & channel on Thursday of the current week at 3PM when nobody has volunteered by using `volunteer`.
     - Possible user responses:
         - Click on the "yes" button to tell the bot you are volunteering to bring breakfast.
 
