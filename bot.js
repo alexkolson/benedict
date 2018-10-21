@@ -54,11 +54,13 @@ const getBearerToken = function (hook) {
       resolve(encryptedAuthData);
     });
   }).then(function (encryptedAuthData) {
-    const authData = JSON.parse(decrypt(encMethod, encKey, encryptedAuthData));
+    if (encryptedAuthData) {
+      const authData = JSON.parse(decrypt(encMethod, encKey, encryptedAuthData));
 
-    if (new Date(authData.expiresAt).getTime() > new Date().getTime()) {
-      console.log({ msg: 'getBearerToken: returning access token from storage because it is still valid' });
-      return authData.access_token;
+      if (new Date(authData.expiresAt).getTime() > new Date().getTime()) {
+        console.log({ msg: 'getBearerToken: returning access token from storage because it is still valid' });
+        return authData.access_token;
+      }
     }
 
     return request.post(authUrl, {
