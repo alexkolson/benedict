@@ -1,9 +1,94 @@
-const { format } = require('util');
+'use strict';
 
+const crypto = require('crypto');
+const { format } = require('util');
 const request = require('request-promise');
+
+const encrypt = function (ivLength, method, key, text) {
+  let iv = crypto.randomBytes(ivLength);
+  let cipher = crypto.createCipheriv(method, new Buffer(key), iv);
+  let encrypted = cipher.update(text);
+
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+
+  return iv.toString('hex') + ':' + encrypted.toString('hex');
+};
+
+const decrypt = function (method, key, text) {
+  let textParts = text.split(':');
+  let iv = new Buffer(textParts.shift(), 'hex');
+  let encryptedText = new Buffer(textParts.join(':'), 'hex');
+  let decipher = crypto.createDecipheriv(method, new Buffer(key), iv);
+  let decrypted = decipher.update(encryptedText);
+
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+
+  return decrypted.toString();
+};
 
 const serializeError = function (err) {
   return JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)));
+};
+
+const getBearerToken = function (hook) {
+  const {
+    env: {
+      MICROSOFT_BOT_AUTH_URL: authUrl,
+      MICROSOFT_APP_ID: appId,
+      MICROSOFT_APP_PASSWORD: appPassword,
+      ENCRYPTION_METHOD: encMethod,
+      ENCRYPTION_KEY: encKey,
+      ENCRYPTION_IV_LENGTH: encIvLength,
+    },
+    datastore: store,
+  } = hook;
+
+  const authDataStoreKey = 'microsoftBotAccessToken';
+
+  return new Promise(function (resolv, reject) {
+    store.get(authDataStoreKey, function (err, encryptedAuthData) {
+      if (err) {
+        reject(err);
+      }
+
+      resolve(encryptedAuthData);
+    });
+  }).then(function (encryptedAuthData) {
+    const authData = JSON.parse(decrypt(encMethod, encKey, encryptedAuthData));
+
+    if (new Date(authData.expiresAt).getTime() > new Date().getTime()) {
+      console.log({ msg: 'getBearerToken: returning access token from storage because it is still valid' });
+      return authData.access_token;
+    }
+
+    return request.post(authUrl, {
+      form: {
+        grant_type: 'client_credentials',
+        client_id: appId,
+        client_secret: appPassword,
+        scope: 'https://api.botframework.com/.default',
+      },
+      json: true,
+    }).then(function (authResponse) {
+      authResponse.expiresAt = new Date().getTime() + (authResponse.expires_in * 1000);
+      delete authResponse.expires_in;
+
+      const encryptedAuthResponse = encrypt(encIvLength, encMethod, encKey, JSON.stringify(authResponse));
+
+      return new Promise(function (resolve, reject) {
+        store.set(authDataStoreKey, encryptedAuthResponse, function (err) {
+          if (err) {
+            reject(err);
+          }
+
+          resolve(authResponse);
+        })
+      }).then(function (authResponse) {
+        console.log({ msg: 'getBearerToken: returning fresh access token from request because old access token was expired' });
+        return authResponse.access_token;
+      });
+    });
+  })
 };
 
 const acknowledgeRsvp = function (hook) {
@@ -14,7 +99,7 @@ const retrieveRsvpCount = function (hook) {
 };
 
 const acknowledgeVolunteer = function (hook) {
-
+  return getBearerToken(hook);
 };
 
 const acknowledgeUnknownCommand = function (hook) {
@@ -33,18 +118,32 @@ const parseCommand = function (message) {
   return message.replace(/<at>Benedict<\/at>/g, '').trim();
 };
 
-const getBearerToken = function (authUrl, appId, appPassword) {
-  return request.post(authUrl, {
-    form: {
-      grant_type: 'client_credentials',
-      client_id: appId,
-      client_secret: appPassword,
-      scope: 'https://api.botframework.com/.default',
+const handleMessagePayload = function (hook) {
+  const {
+    req: {
+      body: payload,
     },
-    json: true,
-  }).then(function (authResponse) {
-    return authResponse.access_token;
-  });
+  } = hook;
+
+  const { text: message } = payload;
+
+  const command = parseCommand(message);
+
+  if (commands.indexOf(command) === -1) {
+    const unkownCommandErr = new Error(format('command: %s not a known benedict command.', command));
+    unkownCommandErr.status = 404;
+    throw unkownCommandrr;
+  }
+
+  console.log({ command });
+
+  const { [command]: action } = commandToActionMap;
+
+  return action(hook);
+};
+
+const payloadTypeToHandlerMap = {
+  message: handleMessagePayload,
 };
 
 const replyToUserBotMention = function (hook) {
@@ -96,21 +195,23 @@ const replyToUserBotMention = function (hook) {
 };
 
 module.exports = function bot(hook) {
-  console.log({ payload: hook.req.body });
+  const {
+    req: {
+      body: payload
+    }
+  } = hook;
 
-  const command = parseCommand(message);
+  console.log({ payload });
 
-  if (commands.indexOf(command) === -1) {
-    const unkownCommadnErr = new Error(format('command: %s not a known benedict command.', command));
-    unkownCommadnErr.status = 404;
-    throw unkownCommadnErr;
+
+  const { [payload.type]: handler } = payloadTypeToHandlerMap;
+
+  if (!handler) {
+    const unkownPayloadTypeErr = new Error(format('payload: %s not something benedict knows how to handle.', payload.type));
+    throw unkownPayloadTypeErr;
   }
 
-  console.log({ command });
-
-  const { [command]: action } = commandToActionMap;
-
-  return action(hook)
+  return handler(hook)
     .then(function () {
       res.status = 200;
       res.end();
