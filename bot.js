@@ -45,7 +45,7 @@ const getBearerToken = function (hook) {
 
   const authDataStoreKey = 'microsoftBotAccessToken';
 
-  return new Promise(function (resolv, reject) {
+  return new Promise(function (resolve, reject) {
     store.get(authDataStoreKey, function (err, encryptedAuthData) {
       if (err) {
         reject(err);
