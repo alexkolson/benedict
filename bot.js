@@ -132,7 +132,7 @@ const handleMessagePayload = function (hook) {
   if (commands.indexOf(command) === -1) {
     const unkownCommandErr = new Error(format('command: %s not a known benedict command.', command));
     unkownCommandErr.status = 404;
-    throw unkownCommandrr;
+    throw unkownCommandErr;
   }
 
   console.log({ command });
