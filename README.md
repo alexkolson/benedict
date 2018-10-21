@@ -27,7 +27,6 @@ message containing the RSVP'd headcount Friday at 7AM.
     - Sent to the configured team & channel on Thursday of the current week at 3PM when nobody has volunteered by using `volunteer`.
     - Possible user responses:
         - Click on the "yes" button to tell the bot you are volunteering to bring breakfast.
-
 - "Are you coming to breakfast tomorrow?"
     - Sent to the configured team & channel when somebody has volunteered to bring breakfast and the bot needs to gather RSVP's
     - Possible user responses:
@@ -36,4 +35,4 @@ message containing the RSVP'd headcount Friday at 7AM.
         - If you do not click at all by Friday at 2AM it is an assumed "no" RSVP.
 
 ## Technical Info
-Right now Benedict is built to run on [hook.io](https://hook.io), but if it grows into something more I want to put it in a simple docker compose constellation and throw it up an a small docker host somewhere.
+Right now Benedict is built to run on [hook.io](https://hook.io), but if it grows into something more I want to put it in a simple docker compose constellation and throw it up on a small docker host somewhere.
