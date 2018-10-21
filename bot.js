@@ -75,7 +75,7 @@ const getBearerToken = function (hook) {
       authResponse.expiresAt = new Date().getTime() + (authResponse.expires_in * 1000);
       delete authResponse.expires_in;
 
-      const encryptedAuthResponse = encrypt(encIvLength, encMethod, encKey, JSON.stringify(authResponse));
+      const encryptedAuthResponse = encrypt(parseInt(encIvLength, 10), encMethod, encKey, JSON.stringify(authResponse));
 
       return new Promise(function (resolve, reject) {
         store.set(authDataStoreKey, encryptedAuthResponse, function (err) {
