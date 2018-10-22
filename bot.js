@@ -48,7 +48,7 @@ const getBearerToken = function (hook) {
   return new Promise(function (resolve, reject) {
     store.get(authDataStoreKey, function (err, encryptedAuthData) {
       if (err) {
-        reject(err);
+        return reject(err);
       }
 
       resolve(encryptedAuthData);
@@ -80,7 +80,7 @@ const getBearerToken = function (hook) {
       return new Promise(function (resolve, reject) {
         store.set(authDataStoreKey, encryptedAuthResponse, function (err) {
           if (err) {
-            reject(err);
+            return reject(err);
           }
 
           resolve(authResponse);
@@ -90,7 +90,20 @@ const getBearerToken = function (hook) {
         return authResponse.access_token;
       });
     });
+
   })
+};
+
+const unkownPayloadHandler = function (hook) {
+  const {
+    req: {
+      body: payload,
+    },
+  } = hook;
+
+  return new Promise(function (resolve, reject) {
+    return reject(new Error(format('payload: %s not something benedict knows how to handle.', payload.type)));
+  });
 };
 
 const acknowledgeRsvp = function (hook) {
@@ -103,10 +116,6 @@ const retrieveRsvpCount = function (hook) {
 const acknowledgeVolunteer = function (hook) {
   return getBearerToken(hook);
 };
-
-const acknowledgeUnknownCommand = function (hook) {
-
-}
 
 const commandToActionMap = {
   rsvp: acknowledgeRsvp,
@@ -205,13 +214,7 @@ module.exports = function bot(hook) {
 
   console.log({ payload });
 
-
-  const { [payload.type]: handler } = payloadTypeToHandlerMap;
-
-  if (!handler) {
-    const unkownPayloadTypeErr = new Error(format('payload: %s not something benedict knows how to handle.', payload.type));
-    throw unkownPayloadTypeErr;
-  }
+  const { [payload.type]: handler = unkownPayloadHandler } = payloadTypeToHandlerMap;
 
   return handler(hook)
     .then(function () {
