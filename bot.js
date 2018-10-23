@@ -43,7 +43,12 @@ const getBearerToken = function (hook) {
     datastore: store,
   } = hook;
 
-  const authDataStoreKey = 'microsoftBotAccessToken';
+  const dataStoreKeys = {
+    auth: 'benedictAuth',
+    volunteer: 'benedictVolunteer',
+  };
+
+  const { auth: authDataStoreKey } = dataStoreKeys;
 
   return new Promise(function (resolve, reject) {
     store.get(authDataStoreKey, function (err, encryptedAuthData) {
@@ -114,7 +119,11 @@ const retrieveRsvpCount = function (hook) {
 };
 
 const acknowledgeVolunteer = function (hook) {
-  return getBearerToken(hook);
+  return getBearerToken(hook)
+    .then(function (accessToken) {
+      // Set Volunteer user information in datastore.
+      // Tell user with replyToBotMention or something similar.
+    });
 };
 
 const commandToActionMap = {
