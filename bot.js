@@ -122,6 +122,7 @@ const acknowledgeVolunteer = function (hook) {
   return getBearerToken(hook)
     .then(function (accessToken) {
       // Set Volunteer user information in datastore.
+      console.log({ accessToken });
       // Tell user with replyToBotMention or something similar.
     });
 };
