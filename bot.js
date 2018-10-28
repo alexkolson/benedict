@@ -63,7 +63,7 @@ const getAccessToken = function (hook) {
       const authData = JSON.parse(decrypt(encMethod, encKey, encryptedAuthData));
 
       if (new Date(authData.expiresAt).getTime() > new Date().getTime()) {
-        console.log({ msg: 'getBearerToken: returning access token from storage because it is still valid' });
+        console.log({ msg: 'getAccessToken: returning access token from storage because it is still valid' });
         return authData.access_token;
       }
     }
@@ -91,7 +91,7 @@ const getAccessToken = function (hook) {
           resolve(authResponse);
         })
       }).then(function (authResponse) {
-        console.log({ msg: 'getBearerToken: returning fresh access token from request because old access token was expired' });
+        console.log({ msg: 'getAccessToken: returning fresh access token from request because old access token was expired' });
         return authResponse.access_token;
       });
     });
