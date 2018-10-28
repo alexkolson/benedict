@@ -4,6 +4,11 @@ const crypto = require('crypto');
 const { format } = require('util');
 const request = require('request-promise');
 
+const dataStoreKeys = {
+  auth: 'benedictAuth',
+  volunteer: 'benedictVolunteer',
+};
+
 const encrypt = function (ivLength, method, key, text) {
   let iv = crypto.randomBytes(ivLength);
   let cipher = crypto.createCipheriv(method, new Buffer(key), iv);
@@ -42,11 +47,6 @@ const getAccessToken = function (hook) {
     },
     datastore: store,
   } = hook;
-
-  const dataStoreKeys = {
-    auth: 'benedictAuth',
-    volunteer: 'benedictVolunteer',
-  };
 
   const { auth: authDataStoreKey } = dataStoreKeys;
 
@@ -118,8 +118,38 @@ const retrieveRsvpCount = function (hook) {
 
 };
 
+const getVolunteer = function ({ store, encMethod, encKey }) {
+  return new Promise(function (resolve, reject) {
+    store.get(dataStoreKeys.volunteer, function (err, encryptedVolunteer) {
+      if (err) {
+        return reject(err);
+      }
+
+      resolve(JSON.parse(decrypt(encMethod, encKey, encryptedVolunteer)));
+    });
+  });
+};
+
+const setVolunteer = function (volunteer, { store, encMethod, encKey, encIvLength }) {
+  return new Promise(function (resolve, reject) {
+    const encryptedVolunteer = encrypt(parseInt(encIvLength, 10), encMethod, encKey, JSON.stringify(volunteer));
+    store.set(dataStoreKeys.volunteer, encryptedVolunteer, function (err, result) {
+      if (err) {
+        return reject(err);
+      }
+
+      resolve(result);
+    });
+  });
+};
+
 const acknowledgeVolunteer = function (hook) {
   const {
+    env: {
+      ENCRYPTION_METHOD: encMethod,
+      ENCRYPTION_KEY: encKey,
+      ENCRYPTION_IV_LENGTH: encIvLength,
+    },
     req: {
       body: {
         serviceUrl,
@@ -133,15 +163,7 @@ const acknowledgeVolunteer = function (hook) {
     datastore: store,
   } = hook;
 
-  return getAccessToken(hook)
-    .then(function (accessToken) {
-      // Set Volunteer user information in datastore.
-      console.log({
-        accessToken,
-        volunteer,
-      });
-      // Tell user with replyToBotMention or something similar.
-    });
+  return setVolunteer(volunteer, { store, encMethod, encKey, encIvLength });
 };
 
 const commandToActionMap = {
