@@ -125,22 +125,35 @@ const getVolunteer = function ({ store, encMethod, encKey }) {
         return reject(err);
       }
 
+      if (!encryptedVolunteer) {
+        return resolve(encryptedVolunteer)
+      }
+
       resolve(JSON.parse(decrypt(encMethod, encKey, encryptedVolunteer)));
     });
   });
 };
 
 const setVolunteer = function (volunteer, { store, encMethod, encKey, encIvLength }) {
-  return new Promise(function (resolve, reject) {
-    const encryptedVolunteer = encrypt(parseInt(encIvLength, 10), encMethod, encKey, JSON.stringify(volunteer));
-    store.set(dataStoreKeys.volunteer, encryptedVolunteer, function (err, result) {
-      if (err) {
-        return reject(err);
+  return getVolunteer({ store, encMethod, encKey })
+    .then(function (existingVolunteer) {
+      if (existingVolunteer) {
+        const existingVolunteerErr = new Error('Breakfast volunteer already exists');
+        existingVolunteerErr.status = 409;
+        throw existingVolunteerErr;
       }
 
-      resolve(result);
+      return new Promise(function (resolve, reject) {
+        const encryptedVolunteer = encrypt(parseInt(encIvLength, 10), encMethod, encKey, JSON.stringify(volunteer));
+        store.set(dataStoreKeys.volunteer, encryptedVolunteer, function (err, result) {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve(result);
+        });
+      });
     });
-  });
 };
 
 const acknowledgeVolunteer = function (hook) {
@@ -163,7 +176,14 @@ const acknowledgeVolunteer = function (hook) {
     datastore: store,
   } = hook;
 
-  return setVolunteer(volunteer, { store, encMethod, encKey, encIvLength });
+  return setVolunteer(volunteer, { store, encMethod, encKey, encIvLength })
+    .then(function () {
+      // Send volunteer acknowledged message
+    })
+    .catch(function (err) {
+      // If err.status is 409 let user know someone already volunteered.
+      // Else let user know something else went wrong (benedict had a hiccup).
+    });
 };
 
 const commandToActionMap = {
