@@ -30,7 +30,7 @@ const serializeError = function (err) {
   return JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)));
 };
 
-const getBearerToken = function (hook) {
+const getAccessToken = function (hook) {
   const {
     env: {
       MICROSOFT_BOT_AUTH_URL: authUrl,
@@ -99,7 +99,7 @@ const getBearerToken = function (hook) {
   })
 };
 
-const unkownPayloadHandler = function (hook) {
+const unknownPayloadHandler = function (hook) {
   const {
     req: {
       body: payload,
@@ -119,10 +119,27 @@ const retrieveRsvpCount = function (hook) {
 };
 
 const acknowledgeVolunteer = function (hook) {
-  return getBearerToken(hook)
+  const {
+    req: {
+      body: {
+        serviceUrl,
+        id: messageId,
+        text: message,
+        conversation,
+        recipient: from,
+        from: volunteer,
+      },
+    },
+    datastore: store,
+  } = hook;
+
+  return getAccessToken(hook)
     .then(function (accessToken) {
       // Set Volunteer user information in datastore.
-      console.log({ accessToken });
+      console.log({
+        accessToken,
+        volunteer,
+      });
       // Tell user with replyToBotMention or something similar.
     });
 };
@@ -224,7 +241,7 @@ module.exports = function bot(hook) {
 
   console.log({ payload });
 
-  const { [payload.type]: handler = unkownPayloadHandler } = payloadTypeToHandlerMap;
+  const { [payload.type]: handler = unknownPayloadHandler } = payloadTypeToHandlerMap;
 
   return handler(hook)
     .then(function () {
