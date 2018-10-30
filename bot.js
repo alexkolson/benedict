@@ -298,6 +298,8 @@ const replyToUserBotMention = function (hook) {
 };
 
 module.exports = function bot(hook) {
+  console.log('benedict is awake.');
+
   const {
     req: {
       body: payload
