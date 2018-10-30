@@ -178,11 +178,34 @@ const acknowledgeVolunteer = function (hook) {
 
   return setVolunteer(volunteer, { store, encMethod, encKey, encIvLength })
     .then(function () {
-      // Send volunteer acknowledged message
-    })
-    .catch(function (err) {
-      // If err.status is 409 let user know someone already volunteered.
-      // Else let user know something else went wrong (benedict had a hiccup).
+      const url = [serviceUrl, 'v3/', 'conversations/', conversation.id, '/', 'activities/', messageId].join('');
+
+      console.log({ msg: 'telling user they are the volunteer!', url });
+
+      return request.post(url, {
+        json: true,
+        headers: {
+          authorization: 'Bearer ' + accessToken,
+        },
+        body: {
+          type: 'message',
+          from,
+          conversation,
+          recipient,
+          text: 'Hi <at>' + volunteer.name + '</at>! You have succesfully volunteered to bring breakfast on Friday!',
+          replyToId: messageId,
+          entities: [
+            {
+              mentioned: {
+                id: volunteer.id,
+                name: volunteer.name,
+              },
+              text: '<at>' + volunteer.name + '</at>',
+              type: 'mention'
+            },
+          ],
+        }
+      })
     });
 };
 
