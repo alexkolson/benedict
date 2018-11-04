@@ -245,7 +245,9 @@ const resetBenedict = function (hook) {
       return getAccessToken(hook);
     })
     .then(function (accessToken) {
-      return request.post(serviceUrl, {
+      const url = [serviceUrl, 'v3/', 'conversations/', conversation.id, '/', 'activities/', messageId].join('');
+
+      return request.post(url, {
         json: true,
         headers: {
           authorization: 'Bearer ' + accessToken,
