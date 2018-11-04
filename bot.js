@@ -231,7 +231,7 @@ const resetBenedict = function (hook) {
           return reject(err);
         }
 
-        if (i === dataStoreKeys.length) {
+        if (i === dataStoreKeys.length - 1) {
           return resolve();
         }
       });
