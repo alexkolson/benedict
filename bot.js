@@ -224,9 +224,13 @@ const resetBenedict = function (hook) {
     datastore: store,
   } = hook;
 
+  const dataStoreKeysMapKeys = Object.keys(dataStoreKeys);
+
   return new Promise(function (resolve, reject) {
-    for (let i = 0; i < dataStoreKeys.length; ++i) {
-      store.del(dataStoreKeys[i], function (err) {
+    for (let i = 0; i < dataStoreKeysMapKeys.length; ++i) {
+      const key = dataStoreKeysMapKeys[i];
+
+      store.del(dataStoreKeys[key], function (err) {
         if (err) {
           return reject(err);
         }
