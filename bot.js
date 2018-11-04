@@ -319,7 +319,7 @@ const reply = function ({
       from,
       conversation,
       recipient,
-      text: 'Hello there <at>' + recipient.name + '</at>!' + text,
+      text: 'Hello there <at>' + recipient.name + '</at>! ' + text,
       replyToId: messageId,
       entities: [
         {
