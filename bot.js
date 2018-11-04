@@ -209,10 +209,70 @@ const acknowledgeVolunteer = function (hook) {
     });
 };
 
+const resetBenedict = function (hook) {
+  const {
+    req: {
+      body: {
+        serviceUrl,
+        id: messageId,
+        text: message,
+        conversation,
+        recipient: from,
+        from: user,
+      },
+    },
+    datastore: store,
+  } = hook;
+
+  return new Promise(function (resolve, reject) {
+    for (let i = 0; i < dataStoreKeys.length; ++i) {
+      store.del(dataStoreKeys[i], function (err) {
+        if (err) {
+          return reject(err);
+        }
+
+        if (i === dataStoreKeys.length) {
+          return resolve();
+        }
+      });
+    }
+  })
+    .then(function () {
+      return getAccessToken(hook);
+    })
+    .then(function (accessToken) {
+      return request.post(url, {
+        json: true,
+        headers: {
+          authorization: 'Bearer ' + accessToken,
+        },
+        body: {
+          type: 'message',
+          from,
+          conversation,
+          recipient,
+          text: 'Hi <at>' + user.name + '</at>! You have successfully reset me!',
+          replyToId: messageId,
+          entities: [
+            {
+              mentioned: {
+                id: user.id,
+                name: user.name,
+              },
+              text: '<at>' + user.name + '</at>',
+              type: 'mention'
+            },
+          ],
+        }
+      });
+    });
+}
+
 const commandToActionMap = {
   rsvp: acknowledgeRsvp,
   rsvps: retrieveRsvpCount,
   volunteer: acknowledgeVolunteer,
+  reset: resetBenedict,
 };
 
 const commands = Object.keys(commandToActionMap);
@@ -321,7 +381,6 @@ module.exports = function bot(hook) {
       res.end();
     });
 
-  // Command volunteer
   // Command rsvp
   // Command rsvps
   // If run from chron run proactive mesaging routine.
