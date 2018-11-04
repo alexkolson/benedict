@@ -245,7 +245,7 @@ const resetBenedict = function (hook) {
       return getAccessToken(hook);
     })
     .then(function (accessToken) {
-      return request.post(url, {
+      return request.post(serviceUrl, {
         json: true,
         headers: {
           authorization: 'Bearer ' + accessToken,
