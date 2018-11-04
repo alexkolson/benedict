@@ -215,7 +215,6 @@ const resetBenedict = function (hook) {
       body: {
         serviceUrl,
         id: messageId,
-        text: message,
         conversation,
         recipient: from,
         from: user,
@@ -245,31 +244,14 @@ const resetBenedict = function (hook) {
       return getAccessToken(hook);
     })
     .then(function (accessToken) {
-      const url = [serviceUrl, 'v3/', 'conversations/', conversation.id, '/', 'activities/', messageId].join('');
-
-      return request.post(url, {
-        json: true,
-        headers: {
-          authorization: 'Bearer ' + accessToken,
-        },
-        body: {
-          type: 'message',
-          from,
-          conversation,
-          recipient: user,
-          text: 'Hi <at>' + user.name + '</at>! You have successfully reset me!',
-          replyToId: messageId,
-          entities: [
-            {
-              mentioned: {
-                id: user.id,
-                name: user.name,
-              },
-              text: '<at>' + user.name + '</at>',
-              type: 'mention'
-            },
-          ],
-        }
+      return reply({
+        serviceUrl,
+        accessToken,
+        from,
+        conversation,
+        recipient: user,
+        text: 'You have succesfully reset me!',
+        messageId,
       });
     });
 }
@@ -315,19 +297,17 @@ const payloadTypeToHandlerMap = {
   message: handleMessagePayload,
 };
 
-const replyToUserBotMention = function (hook) {
-  const {
-    serviceUrl,
-    id: messageId,
-    text: message,
-    conversation,
-    recipient: from,
-    from: recipient,
-  } = hook.req.body;
+const reply = function ({
+  serviceUrl,
+  accessToken,
+  from,
+  conversation,
+  recipient,
+  text,
+  messageId,
+}) {
 
   const url = [serviceUrl, 'v3/', 'conversations/', conversation.id, '/', 'activities/', messageId].join('');
-
-  console.log({ msg: 'About to post message from replyToUserBotMention', url });
 
   return request.post(url, {
     json: true,
@@ -339,7 +319,7 @@ const replyToUserBotMention = function (hook) {
       from,
       conversation,
       recipient,
-      text: 'Hello there <at>' + recipient.name + '</at>! Nice of you to say hello! \uD83D\uDC4B',
+      text: 'Hello there <at>' + recipient.name + '</at>!' + text,
       replyToId: messageId,
       entities: [
         {
@@ -348,14 +328,6 @@ const replyToUserBotMention = function (hook) {
             name: recipient.name,
           },
           text: '<at>' + recipient.name + '</at>',
-          type: 'mention'
-        },
-        {
-          mentioned: {
-            id: botCreatorId,
-            name: botCreatorName,
-          },
-          text: '<at>' + botCreatorName + '</at>',
           type: 'mention'
         },
       ],
