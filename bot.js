@@ -191,7 +191,7 @@ const acknowledgeVolunteer = function (hook) {
           type: 'message',
           from,
           conversation,
-          recipient,
+          recipient: volunteer,
           text: 'Hi <at>' + volunteer.name + '</at>! You have succesfully volunteered to bring breakfast on Friday!',
           replyToId: messageId,
           entities: [
@@ -254,7 +254,7 @@ const resetBenedict = function (hook) {
           type: 'message',
           from,
           conversation,
-          recipient,
+          recipient: user,
           text: 'Hi <at>' + user.name + '</at>! You have successfully reset me!',
           replyToId: messageId,
           entities: [
