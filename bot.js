@@ -196,16 +196,19 @@ const acknowledgeVolunteer = function (hook) {
     })
     .catch(function (err) {
       if (err.status && err.status === 409) {
-        return reply({
-          serviceUrl,
-          accessToken,
-          from,
-          conversation,
-          recipient: volunteer,
-          text: '<at>' + err.existingVolunteer.name + '</at> has already volunteered to bring breakfast! Just sit back and enjoy on Friday!',
-          extraMentions: [err.existingVolunteer],
-          messageId,
-        })
+        return getAccessToken(hook)
+          .then(function (accessToken) {
+            return reply({
+              serviceUrl,
+              accessToken,
+              from,
+              conversation,
+              recipient: volunteer,
+              text: '<at>' + err.existingVolunteer.name + '</at> has already volunteered to bring breakfast! Just sit back and enjoy on Friday!',
+              extraMentions: [err.existingVolunteer],
+              messageId,
+            })
+          });
       }
 
       // if (err instanceof RequestError || err instanceof StatusCodeError) {
