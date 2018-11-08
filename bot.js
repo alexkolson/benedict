@@ -208,9 +208,9 @@ const acknowledgeVolunteer = function (hook) {
         })
       }
 
-      if (err instanceof RequestError || err instanceof StatusCodeError) {
-        throw err;
-      }
+      // if (err instanceof RequestError || err instanceof StatusCodeError) {
+      throw err;
+      // }
     });
 };
 
