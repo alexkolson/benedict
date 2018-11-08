@@ -197,7 +197,7 @@ const acknowledgeVolunteer = function (hook) {
       if (err.status && err.status === 409) {
         const text = (function () {
           if (err.existingVolunteer.id === volunteer.id) {
-            return 'You have already volunteered to bring breakfast!'
+            return 'You have already volunteered to bring breakfast!';
           }
 
           return '<at>' + err.existingVolunteer.name + '</at> has already volunteered to bring breakfast! Just sit back and enjoy on Friday!';
@@ -211,7 +211,7 @@ const acknowledgeVolunteer = function (hook) {
               from,
               conversation,
               recipient: volunteer,
-              text,,
+              text,
               extraMentions: [err.existingVolunteer],
               messageId,
             })
