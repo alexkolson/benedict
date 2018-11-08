@@ -293,16 +293,20 @@ const handleMessagePayload = function (hook) {
   const command = parseCommand(message);
 
   if (commands.indexOf(command) === -1) {
-    console.log('unknown command', command);
-    return reply({
-      serviceUrl,
-      accessToken,
-      from,
-      conversation,
-      recipient: user,
-      text: 'Sorry! I dont know how to deal with "' + command + '"',
-      messageId,
-    });
+    console.log({ msg: 'unknown command', command });
+
+    return getAccessToken(hook)
+      .then(function (accessToken) {
+        return reply({
+          serviceUrl,
+          accessToken,
+          from,
+          conversation,
+          recipient: user,
+          text: 'Sorry! I dont know how to deal with "' + command + '"',
+          messageId,
+        });
+      });
   }
 
   console.log({ command });
