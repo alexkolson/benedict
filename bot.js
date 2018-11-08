@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const { format } = require('util');
 const request = require('request-promise');
+const { RequestError, StatusCodeError } = require('request-promise/errors');
 
 const dataStoreKeys = {
   auth: 'benedictAuth',
@@ -140,6 +141,7 @@ const setVolunteer = function (volunteer, { store, encMethod, encKey, encIvLengt
       if (existingVolunteer) {
         const existingVolunteerErr = new Error('Breakfast volunteer already exists');
         existingVolunteerErr.status = 409;
+        existingVolunteer.existingVolunteer = existingVolunteer;
         throw existingVolunteerErr;
       }
 
@@ -182,30 +184,33 @@ const acknowledgeVolunteer = function (hook) {
 
       console.log({ msg: 'telling user they are the volunteer!', url });
 
-      return request.post(url, {
-        json: true,
-        headers: {
-          authorization: 'Bearer ' + accessToken,
-        },
-        body: {
-          type: 'message',
+      return reply({
+        serviceUrl,
+        accessToken,
+        from,
+        conversation,
+        recipient: volunteer,
+        text: 'You have successfully volunteered to bring breakfast!',
+        messageId,
+      });
+    })
+    .catch(function (err) {
+      if (err.status && err.status === 409) {
+        return reply({
+          serviceUrl,
+          accessToken,
           from,
           conversation,
           recipient: volunteer,
-          text: 'Hi <at>' + volunteer.name + '</at>! You have succesfully volunteered to bring breakfast on Friday!',
-          replyToId: messageId,
-          entities: [
-            {
-              mentioned: {
-                id: volunteer.id,
-                name: volunteer.name,
-              },
-              text: '<at>' + volunteer.name + '</at>',
-              type: 'mention'
-            },
-          ],
-        }
-      })
+          text: '<at>' + err.existingVolunteer.name + '</at> has already volunteered to bring breakfast! Just sit back and enjoy on Friday!',
+          extraMentions: [err.existingVolunteer],
+          messageId,
+        })
+      }
+
+      if (err instanceof RequestError || err instanceof StatusCodeError) {
+        throw err;
+      }
     });
 };
 
@@ -304,10 +309,31 @@ const reply = function ({
   conversation,
   recipient,
   text,
+  extraMentions = [],
   messageId,
 }) {
 
   const url = [serviceUrl, 'v3/', 'conversations/', conversation.id, '/', 'activities/', messageId].join('');
+
+  const entities = [
+    {
+      mentioned: {
+        id: recipient.id,
+        name: recipient.name,
+      },
+      text: '<at>' + recipient.name + '</at>',
+      type: 'mention',
+    },
+  ].concat(extraMentions.map(function (m) {
+    return {
+      mentioned: {
+        id: m.id,
+        name: m.name,
+      },
+      text: '<at>' + m.name + '</at>',
+      type: 'mention',
+    };
+  }));
 
   return request.post(url, {
     json: true,
@@ -321,16 +347,7 @@ const reply = function ({
       recipient,
       text: 'Hello there <at>' + recipient.name + '</at>! ' + text,
       replyToId: messageId,
-      entities: [
-        {
-          mentioned: {
-            id: recipient.id,
-            name: recipient.name,
-          },
-          text: '<at>' + recipient.name + '</at>',
-          type: 'mention'
-        },
-      ],
+      entities,
     }
   });
 };
