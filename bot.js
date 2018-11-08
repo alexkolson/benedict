@@ -195,6 +195,7 @@ const acknowledgeVolunteer = function (hook) {
       });
     })
     .catch(function (err) {
+      console.log({ err });
       if (err.status && err.status === 409) {
         return reply({
           serviceUrl,
