@@ -141,7 +141,7 @@ const setVolunteer = function (volunteer, { store, encMethod, encKey, encIvLengt
       if (existingVolunteer) {
         const existingVolunteerErr = new Error('Breakfast volunteer already exists');
         existingVolunteerErr.status = 409;
-        existingVolunteer.existingVolunteer = existingVolunteer;
+        existingVolunteerErr.existingVolunteer = existingVolunteer;
         throw existingVolunteerErr;
       }
 
@@ -180,7 +180,6 @@ const acknowledgeVolunteer = function (hook) {
 
   return setVolunteer(volunteer, { store, encMethod, encKey, encIvLength })
     .then(function () {
-
       return getAccessToken(hook);
     })
     .then(function (accessToken) {
@@ -195,7 +194,6 @@ const acknowledgeVolunteer = function (hook) {
       });
     })
     .catch(function (err) {
-      console.log(err);
       if (err.status && err.status === 409) {
         return getAccessToken(hook)
           .then(function (accessToken) {
