@@ -195,6 +195,14 @@ const acknowledgeVolunteer = function (hook) {
     })
     .catch(function (err) {
       if (err.status && err.status === 409) {
+        const text = (function () {
+          if (err.existingVolunteer.id === volunteer.id) {
+            return 'You have already volunteered to bring breakfast!'
+          }
+
+          return '<at>' + err.existingVolunteer.name + '</at> has already volunteered to bring breakfast! Just sit back and enjoy on Friday!';
+        })();
+
         return getAccessToken(hook)
           .then(function (accessToken) {
             return reply({
@@ -203,7 +211,7 @@ const acknowledgeVolunteer = function (hook) {
               from,
               conversation,
               recipient: volunteer,
-              text: '<at>' + err.existingVolunteer.name + '</at> has already volunteered to bring breakfast! Just sit back and enjoy on Friday!',
+              text,,
               extraMentions: [err.existingVolunteer],
               messageId,
             })
