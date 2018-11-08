@@ -286,9 +286,11 @@ const handleMessagePayload = function (hook) {
   const command = parseCommand(message);
 
   if (commands.indexOf(command) === -1) {
-    const unkownCommandErr = new Error(format('command: %s not a known benedict command.', command));
-    unkownCommandErr.status = 404;
-    throw unkownCommandErr;
+    return new Promise(function (resolve, reject) {
+      const unkownCommandErr = new Error(format('command: %s not a known benedict command.', command));
+      unkownCommandErr.status = 404;
+      reject(unkownCommandErr);
+    });
   }
 
   console.log({ command });
