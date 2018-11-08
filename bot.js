@@ -138,7 +138,6 @@ const getVolunteer = function ({ store, encMethod, encKey }) {
 const setVolunteer = function (volunteer, { store, encMethod, encKey, encIvLength }) {
   return getVolunteer({ store, encMethod, encKey })
     .then(function (existingVolunteer) {
-      console.log('im here');
       if (existingVolunteer) {
         const existingVolunteerErr = new Error('Breakfast volunteer already exists');
         existingVolunteerErr.status = 409;
@@ -372,6 +371,7 @@ module.exports = function bot(hook) {
       res.end();
     })
     .catch(function (err) {
+      console.log('I crashed and burned!');
       console.log({ err: serializeError(err) });
       res.statusCode = err.status || 500;
       res.end();
