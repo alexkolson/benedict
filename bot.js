@@ -112,7 +112,36 @@ const unknownPayloadHandler = function (hook) {
   });
 };
 
+const getRsvp = function (hook) {
+
+};
+
+const setRsvp = function (hook) {
+  return getRsvp({ store, encMethod, encKey })
+    .then(function (existingVolunteer) {
+      if (existingVolunteer) {
+        const existingVolunteerErr = new Error('Breakfast volunteer already exists');
+        existingVolunteerErr.status = 409;
+        existingVolunteerErr.existingVolunteer = existingVolunteer;
+        throw existingVolunteerErr;
+      }
+
+      return new Promise(function (resolve, reject) {
+        const encryptedVolunteer = encrypt(parseInt(encIvLength, 10), encMethod, encKey, JSON.stringify(volunteer));
+        store.set(dataStoreKeys.volunteer, encryptedVolunteer, function (err, result) {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve(result);
+        });
+      });
+    });
+
+};
+
 const acknowledgeRsvp = function (hook) {
+  return setRsvp(hook);
 };
 
 const retrieveRsvpCount = function (hook) {
